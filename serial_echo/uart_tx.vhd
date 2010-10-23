@@ -10,10 +10,10 @@ entity uart_tx is
     );
     port(
         clk, reset: in std_logic;
-        tx_start: in std_logic;
         tick: in std_logic;
         din: in std_logic_vector(7 downto 0);
-        tx_done_tick: out std_logic;
+        tx_start: in std_logic;
+        tx_done: out std_logic;
         tx: out std_logic
     );
 end uart_tx;
@@ -52,7 +52,7 @@ begin
         n_next <= n_reg;
         b_next <= b_reg;
         tx_next <= tx_reg;
-        tx_done_tick <= '0';
+        tx_done <= '0';
 
         case state_reg is
             when idle =>
@@ -95,7 +95,7 @@ begin
                     if s_reg = (SB_TICK - 1) then
                         state_next <= idle;
                         assert false report "state_next=idle" severity note;
-                        tx_done_tick <= '1';
+                        tx_done <= '1';
                     else
                         s_next <= s_reg + 1;
                     end if;

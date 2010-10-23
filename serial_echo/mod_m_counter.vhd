@@ -9,13 +9,13 @@ entity mod_m_counter is
     );
     port(
         clk, reset: in std_logic;
-        max_tick: out std_logic;
-        q: out std_logic_vector(BITS - 1 downto 0)
+        max_tick: out std_logic
+--        q: out std_logic_vector(BITS - 1 downto 0)
     );
 end mod_m_counter;
 
 architecture behavioral of mod_m_counter is
-    signal r_reg: unsigned(BITS - 1 downto 0);
+    signal r_reg: unsigned(BITS - 1 downto 0) := (others => '0');
     signal r_next: unsigned(BITS - 1 downto 0);
 begin
     process(clk, reset)
@@ -28,6 +28,6 @@ begin
     end process;
 
     r_next <= (others => '0') when r_reg=(M - 1) else r_reg + 1;
-    q <= std_logic_vector(r_reg);
+--    q <= std_logic_vector(r_reg);
     max_tick <= '1' when r_reg=(M - 1) else '0';
 end behavioral;

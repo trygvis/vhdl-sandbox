@@ -11,7 +11,7 @@ entity uart_rx is
         clk, reset: in std_logic;
         rx: in std_logic;
         tick: in std_logic;
-        rx_done_tick: out std_logic;
+        rx_done: out std_logic;
         dout: out std_logic_vector(7 downto 0)
     );
 end uart_rx;
@@ -46,7 +46,7 @@ begin
         s_next <= s_reg;
         n_next <= n_reg;
         b_next <= b_reg;
-        rx_done_tick <= '0';
+        rx_done <= '0';
         case state_reg is
             when idle =>
                 if rx = '0' then
@@ -81,7 +81,7 @@ begin
                 if tick = '1' then
                     if s_reg = (SB_TICK-1) then
                         state_next <= idle;
-                        rx_done_tick <= '1';
+                        rx_done <= '1';
                     else
                         s_next <= s_reg + 1;
                     end if;
