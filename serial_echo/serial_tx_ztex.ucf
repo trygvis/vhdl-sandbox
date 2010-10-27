@@ -3,14 +3,23 @@ timespec ts_clk = period clk 20.83 ns high 50%;
 
 NET clk LOC = "K14" | IOSTANDARD = LVCMOS33;
 
-NET clk_out         LOC = "B14" | IOSTANDARD = LVCMOS33; # 73
-NET reset_out       LOC = "A14" | IOSTANDARD = LVCMOS33; # 74
+#NET                 LOC = "B14" | IOSTANDARD = LVCMOS33; # 73
+#NET                 LOC = "A14" | IOSTANDARD = LVCMOS33; # 74
 #NET                 LOC = "C13" | IOSTANDARD = LVCMOS33; # 76
 #NET                 LOC = "D11" | IOSTANDARD = LVCMOS33; # 77
-NET tick            LOC = "D12" | IOSTANDARD = LVCMOS33; # 78
-#NET tx              LOC = "F10" | IOSTANDARD = LVCMOS33; # 79
-NET tx_start        LOC = "E11" | IOSTANDARD = LVCMOS33; # 80
-NET tx_done         LOC = "E10" | IOSTANDARD = LVCMOS33; # 82
+#NET                 LOC = "D12" | IOSTANDARD = LVCMOS33; # 78
+#NET                 LOC = "F10" | IOSTANDARD = LVCMOS33; # 79
+#NET                 LOC = "E11" | IOSTANDARD = LVCMOS33; # 80
+#NET                 LOC = "E10" | IOSTANDARD = LVCMOS33; # 82
+
+NET clk_out         LOC = "C7" | IOSTANDARD = LVCMOS33; # 92
+NET reset_out       LOC = "A7" | IOSTANDARD = LVCMOS33; # 93
+#NET                 LOC = "F7" | IOSTANDARD = LVCMOS33; # 95
+#NET                 LOC = "E6" | IOSTANDARD = LVCMOS33; # 96
+NET tick            LOC = "D6" | IOSTANDARD = LVCMOS33; # 97
+NET tx              LOC = "C6" | IOSTANDARD = LVCMOS33; # 98
+NET tx_start        LOC = "B6" | IOSTANDARD = LVCMOS33; # 99
+NET tx_done         LOC = "A6" | IOSTANDARD = LVCMOS33; # 100
 
 #NET "pb<0>"  LOC = "C16" | IOSTANDARD = LVCMOS33 | DRIVE = 12;
 #NET "pb<1>"  LOC = "C15" | IOSTANDARD = LVCMOS33 | DRIVE = 12;

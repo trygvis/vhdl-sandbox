@@ -20,6 +20,8 @@ architecture default of serial_tx_ztex is
     signal ztex_clk: std_logic;
     signal reset: std_logic;
 
+    signal tx_start_s: std_logic;
+
     signal din: unsigned(7 downto 0);
     signal din_next: unsigned(7 downto 0);
 
@@ -38,6 +40,8 @@ begin
     reset <= pc(0);
 --    reset <= reset_in;
 --    reset <= '0';
+
+    tx_start <= tx_start_s;
 
     ztex_clk <= clk;
 
@@ -58,18 +62,20 @@ begin
         port map(
             reset => reset,
             clk => ztex_clk,
-            din => std_logic_vector(din),
+            din => std_logic_vector(din_next),
             tick => tick,
             tx => tx,
-            tx_start => tx_start,
+            tx_start => tx_start_s,
             tx_done => tx_done
         );
 
     din_next <= din + 1;
-    process(ztex_clk)
+    process(tx_start_s)
     begin
-        if rising_edge(ztex_clk) then
-            din <= din_next;
+        if rising_edge(tx_start_s) then
+            din <= "11110000";
+--            din <= "01010100";
+--            din <= din_next;
         end if;
     end process;
 end;

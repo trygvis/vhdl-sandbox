@@ -49,16 +49,16 @@ begin
             reset => reset,
             max_tick => tx_start_s);
 
---    uart_tx_unit: entity work.uart_tx(default)
---        generic map(
---            DBIT => DBIT,
---            SB_TICK => SB_TICK)
---        port map(
---            clk => clk,
---            reset => reset,
---            tick => tick_s,
---            din => din,
---            tx => tx,
---            tx_start => tx_start_s,
---            tx_done => tx_done_s);
+    uart_tx_unit: entity work.uart_tx(default)
+        generic map(
+            DBIT => DBIT,
+            SB_TICK => SB_TICK)
+        port map(
+          clk => clk,
+            reset => reset,
+            tick => tick_s,
+            din => din,
+            tx => tx,
+            tx_start => tx_start_s,
+            tx_done => tx_done_s);
 end;

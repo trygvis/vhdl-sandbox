@@ -17,3 +17,7 @@ run-%: make-%
 
 import: work $(wildcard *.vhd)
 	ghdl -i --workdir=work $(filter %.vhd, $?)
+
+# Xilinx
+%.bin: %.bit
+	promgen -w -p bin -u 0 $<
