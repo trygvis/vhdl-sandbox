@@ -10,11 +10,11 @@ entity uart_tx is
     );
     port(
         clk, reset: in std_logic;
-        tick: in std_logic;
-        din: in std_logic_vector(7 downto 0);
-        tx_start: in std_logic;
-        tx_done: out std_logic;
-        tx: out std_logic
+        tick: in bit;
+        din: in bit_vector(7 downto 0);
+        tx_start: in bit;
+        tx_done: out bit;
+        tx: out bit
     );
 end uart_tx;
 
@@ -23,8 +23,8 @@ architecture default of uart_tx is
     signal state_reg, state_next: state_type;
     signal s_reg, s_next: unsigned(3 downto 0);
     signal n_reg, n_next: unsigned(2 downto 0);
-    signal b_reg, b_next: std_logic_vector(7 downto 0);
-    signal tx_reg, tx_next: std_logic;
+    signal b_reg, b_next: bit_vector(7 downto 0);
+    signal tx_reg, tx_next: bit;
 begin
     -- FSMD state & data registers
     process(clk, reset)

@@ -9,7 +9,7 @@ entity mod_m_counter is
     );
     port(
         clk, reset: in std_logic;
-        max_tick: out std_logic
+        max_tick: out bit
 --        q: out std_logic_vector(BITS - 1 downto 0)
     );
 end mod_m_counter;
@@ -22,7 +22,7 @@ begin
     begin
         if reset = '1' then
             r_reg <= (others => '0');
-        elsif (clk'event and clk='1') then
+        elsif rising_edge(clk) then
             r_reg <= r_next;
         end if;
     end process;

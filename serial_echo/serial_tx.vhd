@@ -11,18 +11,19 @@ entity serial_tx is
         SB_TICK: positive := 16
     );
     port(
-        clk: in std_logic;
-        reset: in std_logic;
-        din: in std_logic_vector(7 downto 0);
-        tick: out std_logic;
-        tx: out std_logic;
-        tx_start, tx_done: out std_logic
+        clk, reset: in std_logic;
+        din: in bit_vector(7 downto 0);
+        tick: out bit;
+        tx: out bit;
+        tx_start: out bit;
+        tx_done: out bit
     );
 end;
 
 architecture default of serial_tx is
-    signal tick_s: std_logic;
-    signal tx_done_s, tx_start_s: std_logic;
+    signal tick_s: bit;
+    signal tx_start_s: bit;
+    signal tx_done_s: bit;
 begin
     tick <= tick_s;
     tx_done <= tx_done_s;
@@ -45,7 +46,7 @@ begin
             M => 16 * 16, -- start a new tx after 16 bits (* 16 ticks)
             BITS => 10)
         port map(
-            clk => tick_s,
+            clk => to_std_logic(tick_s),
             reset => reset,
             max_tick => tx_start_s);
 

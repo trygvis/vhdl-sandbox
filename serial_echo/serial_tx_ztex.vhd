@@ -9,10 +9,10 @@ entity serial_tx_ztex is
         pc: in std_logic_vector(0 downto 0);
         clk_out: out std_logic;
         reset_out: out std_logic;
-        tick: out std_logic;
-        tx: out std_logic;
-        tx_start: out std_logic;
-        tx_done: out std_logic
+        tick: out bit;
+        tx: out bit;
+        tx_start: out bit;
+        tx_done: out bit
     );
 end;
 
@@ -20,7 +20,7 @@ architecture default of serial_tx_ztex is
     signal ztex_clk: std_logic;
     signal reset: std_logic;
 
-    signal tx_start_s: std_logic;
+    signal tx_start_s: bit;
 
     signal din: unsigned(7 downto 0);
     signal din_next: unsigned(7 downto 0);
@@ -62,7 +62,7 @@ begin
         port map(
             reset => reset,
             clk => ztex_clk,
-            din => std_logic_vector(din_next),
+            din => bit_vector(din_next),
             tick => tick,
             tx => tx,
             tx_start => tx_start_s,
