@@ -3,17 +3,34 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 package utils is
 
-  function to_string(b: std_logic) return string;
-  function to_string(vec: std_logic_vector) return string;
-  function to_string(vec: bit_vector) return string;
-  function to_std_logic(b: bit) return std_logic;
-  function to_string(int: integer) return string;
-  function to_string(int: integer; base: integer) return string;
-  function chr(int: integer) return character;
+    function to_string(b: std_logic) return string;
+    function to_string(vec: std_logic_vector) return string;
+    function to_string(vec: bit_vector) return string;
+    function to_std_logic(b: bit) return std_logic;
+    function to_string(int: integer) return string;
+    function to_string(int: integer; base: integer) return string;
+    function chr(int: integer) return character;
+
+    function signal_mon(b: bit) return character;
 
 end package;
 
 package body utils is
+
+    function signal_mon(b: bit) return character is
+    begin
+        signal_monitor: process
+        begin
+            wait until sig'event;
+            if rising_edge(sig) then
+                assert false report "monitor: " & tag & " rising edge, value=" & to_string(sig) severity note;
+            elsif falling_edge(sig) then
+                assert false report "monitor: " & tag & " falling edge, value=" & to_string(sig) severity note;
+            else
+                assert false report "monitor: " & tag & " change, value=" & to_string(sig) severity note;
+            end if;
+        end process;
+    end;
 
     function to_string(b: std_logic) return string is
     begin

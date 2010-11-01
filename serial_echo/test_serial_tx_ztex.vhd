@@ -12,9 +12,9 @@ architecture default of test_serial_tx_ztex is
     signal pc: std_logic_vector(0 downto 0);
     signal clk_out: std_logic;
     signal reset_out: std_logic;
-    signal tick: std_logic;
-    signal tx: std_logic;
-    signal tx_start, tx_done: std_logic;
+    signal tick: bit;
+    signal tx: bit;
+    signal tx_start, tx_done: bit;
 
     constant clk_period: time := 20.83 ns; -- 48MHz
 begin
