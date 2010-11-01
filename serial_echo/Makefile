@@ -13,7 +13,7 @@ make-%: work/work-obj93.cf
 	ghdl -m --workdir=work $(patsubst make-%,%,$@)
 
 run-%: make-%
-	ghdl -r --workdir=work $(patsubst run-%,%, $@) $(ARGS)
+	ghdl -r --workdir=work $(patsubst run-%,%, $@) $(ARGS) 2>&1 | perl -n -e'/.*.vhd:[0-9]*:[0-9]*:@([0-9a-z]*):.*: (.*)/ && printf "%15s %s\n",$$1,$$2'
 
 import: work $(wildcard *.vhd)
 	ghdl -i --workdir=work $(filter %.vhd, $?)
