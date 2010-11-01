@@ -22,8 +22,9 @@ architecture default of serial_tx_ztex is
 
     signal tx_start_s: bit;
 
-    signal din: unsigned(7 downto 0);
-    signal din_next: unsigned(7 downto 0);
+    signal din: bit_vector(7 downto 0);
+    signal data: natural;
+    signal data_next: natural;
 
     -- Baud rate | Tick rate
     --     1,200 |   19,200
@@ -62,19 +63,21 @@ begin
         port map(
             reset => reset,
             clk => ztex_clk,
-            din => bit_vector(din_next),
+            din => din,
             tick => tick,
             tx => tx,
             tx_start => tx_start_s,
             tx_done => tx_done
         );
 
-    din_next <= din + 1;
+    data_next <= data + 1;
+    din <= work.utils.to_bit_vector(data_next, 8);
     process(tx_start_s)
     begin
-        if rising_edge(tx_start_s) then
-            din <= "11110000";
---            din <= "01010100";
+        if clk'event and clk='1' then
+--        if rising_edge(tx_start_s) then
+            data <= 84;
+--            din <= "01010100"; -- 84, 0x54 b01010100
 --            din <= din_next;
         end if;
     end process;

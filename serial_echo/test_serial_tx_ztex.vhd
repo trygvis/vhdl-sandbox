@@ -33,8 +33,10 @@ begin
     clk <= '1', not clk after 0.5 * clk_period;
     pc(0) <= '1', '0' after (1.75 * clk_period);
 
-    reset_monitor: entity work.signal_monitor(signal_event) generic map("reset") port map (pc(0));
-    clk_out_monitor: entity work.signal_monitor(signal_event) generic map("clk_out") port map (clk_out);
-    tx_start_monitor: entity work.signal_monitor(r_edge) generic map("tx_start") port map (tx_start);
-    tx_done_monitor: entity work.signal_monitor(r_edge) generic map("tx_done") port map (tx_done);
+    reset_monitor: entity work.std_logic_monitor(signal_event) generic map("reset") port map (pc(0));
+--    clk_out_monitor: entity work.std_logic_monitor(signal_event) generic map("clk_out") port map (clk_out);
+    tick_monitor: entity work.bit_monitor(r_edge) generic map("tick") port map (tick);
+    tx_monitor: entity work.bit_monitor(signal_event) generic map("tx") port map (tx);
+    tx_start_monitor: entity work.bit_monitor(r_edge) generic map("tx_start") port map (tx_start);
+    tx_done_monitor: entity work.bit_monitor(r_edge) generic map("tx_done") port map (tx_done);
 end;

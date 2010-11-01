@@ -35,6 +35,7 @@ begin
             n_reg <= (others => '0');
             b_reg <= (others => '0');
             tx_reg <= '1';
+            assert false report "uart_tx reset" severity note;
         elsif clk'event and clk='1' then
             state_reg <= state_next;
             s_reg <= s_next;
@@ -44,37 +45,41 @@ begin
         end if;
     end process;
 
+    process(state_reg, b_reg)
+    begin
+        case state_reg is
+            when idle  => tx_next <= '1';
+            when start => tx_next <= '0';
+            when data  => tx_next <= b_reg(0);
+            when stop  => tx_next <= '1';
+        end case;
+    end process;
+
     -- next-state logic & data path functional units/routing
-    process(state_reg, s_reg, n_reg, b_reg, tick, tx_reg, tx_start, din)
+    process(state_reg, s_reg, n_reg, b_reg, tick, tx_start, din)
     begin
         state_next <= state_reg;
         s_next <= s_reg;
         n_next <= n_reg;
         b_next <= b_reg;
-        tx_next <= tx_reg;
         tx_done <= '0';
 
         case state_reg is
             when idle =>
-                tx_next <= '1';
                 if tx_start = '1' then
-                    state_next <= start;
                     assert false report "state_next=start, data=" & to_string(din) severity note;
+                    state_next <= start;
                     s_next <= (others => '0');
                     b_next <= din;
                 end if;
             when start =>
-                tx_next <= '0';
                 if tick = '1' then
                     state_next <= data;
                     assert false report "state_next=data" severity note;
                     s_next <= (others => '0');
                     n_next <= (others => '0');
-                else
-                    s_next <= s_reg + 1;
                 end if;
             when data =>
-                tx_next <= b_reg(0);
                 if tick = '1' then
                     if s_reg = 15 then
                         s_next <= (others => '0');
@@ -84,13 +89,13 @@ begin
                             assert false report "state_next=stop" severity note;
                         else
                             n_next <= n_reg + 1;
+                            assert false report "state_next=data (still) n_next=" & to_string(to_integer(n_next)) severity note;
                         end if;
                     else
                         s_next <= s_reg + 1;
                     end if;
                 end if;
             when stop =>
-                tx_next <= '1';
                 if tick = '1' then
                     if s_reg = (SB_TICK - 1) then
                         state_next <= idle;

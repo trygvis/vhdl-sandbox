@@ -2,12 +2,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.utils.all;
 
-entity signal_monitor is
+entity std_logic_monitor is
     generic ( tag: string );
     port    ( sig : in std_logic);
-end signal_monitor;
+end;
 
-architecture signal_event of signal_monitor is
+architecture signal_event of std_logic_monitor is
 begin
     signal_monitor: process
     begin
@@ -22,7 +22,7 @@ begin
     end process;
 end;
 
-architecture r_edge of signal_monitor is
+architecture r_edge of std_logic_monitor is
 begin
     signal_monitor: process
     begin
@@ -31,7 +31,7 @@ begin
     end process;
 end;
 
-architecture f_edge of signal_monitor is
+architecture f_edge of std_logic_monitor is
 begin
     signal_monitor: process
     begin

@@ -1,35 +1,33 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.all;
 
 package utils is
 
+    function to_string(b: bit) return string;
     function to_string(b: std_logic) return string;
     function to_string(vec: std_logic_vector) return string;
     function to_string(vec: bit_vector) return string;
-    function to_std_logic(b: bit) return std_logic;
+--    function to_string(x: unsigned) return string;
     function to_string(int: integer) return string;
     function to_string(int: integer; base: integer) return string;
-    function chr(int: integer) return character;
 
-    function signal_mon(b: bit) return character;
+    function to_chr(int: integer) return character;
+
+    function to_bit_vector(nat: natural; len: natural) return bit_vector;
+
+    function to_std_logic(b: bit) return std_logic;
 
 end package;
 
 package body utils is
 
-    function signal_mon(b: bit) return character is
+    function to_string(b: bit) return string is
     begin
-        signal_monitor: process
-        begin
-            wait until sig'event;
-            if rising_edge(sig) then
-                assert false report "monitor: " & tag & " rising edge, value=" & to_string(sig) severity note;
-            elsif falling_edge(sig) then
-                assert false report "monitor: " & tag & " falling edge, value=" & to_string(sig) severity note;
-            else
-                assert false report "monitor: " & tag & " change, value=" & to_string(sig) severity note;
-            end if;
-        end process;
+        case b is
+            when '0' => return "0";
+            when '1' => return "1";
+        end case;
     end;
 
     function to_string(b: std_logic) return string is
@@ -42,7 +40,7 @@ package body utils is
                 assert false report "Failure" severity failure;
                 return "F";
         end case;
-    end to_string;
+    end;
 
     function to_string(vec: std_logic_vector) return string is
         variable result: string(1 to vec'length);
@@ -57,7 +55,7 @@ package body utils is
             end case;
         end loop;
         return result;
-    end to_string;
+    end;
 
     function to_string(vec: bit_vector) return string is
         variable result: string(1 to vec'length);
@@ -72,7 +70,16 @@ package body utils is
             end case;
         end loop;
         return result;
-    end to_string;
+    end;
+
+--    function to_string(x: unsigned) return string is
+--        variable result: string(1 to x'length);
+--    begin
+--        for i in x'range loop
+--            result(i+1) := x(i);
+--        end loop;
+--        return result;
+--    end;
 
     function to_std_logic(b: bit) return std_logic is
     begin
@@ -82,7 +89,7 @@ package body utils is
         end case;
     end;
 
-    function chr(int: integer) return character is
+    function to_chr(int: integer) return character is
         variable c: character;
     begin
         case int is
@@ -125,7 +132,7 @@ package body utils is
             when others => c := '?';
         end case;
         return c;
-    end chr;
+    end;
 
     function to_string(int: integer; base: integer) return string is
         variable temp:      string(1 to 10);
@@ -140,15 +147,15 @@ package body utils is
 
         num     := abs_int;
 
-        while num >= base loop                     -- Determine how many
-            len := len + 1;                        -- characters required
-            num := num / base;                     -- to represent the
-        end loop ;                                 -- number.
+        while num >= base loop                          -- Determine how many
+            len := len + 1;                             -- characters required
+            num := num / base;                          -- to represent the
+        end loop ;                                      -- number.
 
-        for i in len downto 1 loop                 -- Convert the number to
-            temp(i) := chr(abs_int/power mod base);-- a string starting
-            power := power * base;                 -- with the right hand
-        end loop ;                                 -- side.
+        for i in len downto 1 loop                      -- Convert the number to
+            temp(i) := to_chr(abs_int/power mod base);  -- a string starting
+            power := power * base;                      -- with the right hand
+        end loop ;                                      -- side.
 
         -- return result and add sign if required
         if int < 0 then
@@ -164,4 +171,15 @@ package body utils is
         return to_string(int, 10);
     end;
 
+    function to_bit_vector(nat: natural;
+                           len: natural) return bit_vector is
+        variable temp : natural := nat;
+        variable result : bit_vector(0 to len-1);
+    begin
+        for index in result'reverse_range loop
+            result(index) := bit'val(temp rem 2);
+            temp := temp / 2;
+        end loop;
+        return result;
+    end;
 end package body;
