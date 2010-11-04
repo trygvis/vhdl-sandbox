@@ -9,10 +9,10 @@ entity serial_tx_ztex is
         pc: in std_logic_vector(0 downto 0);
         clk_out: out std_logic;
         reset_out: out std_logic;
-        tick: out bit;
-        tx: out bit;
-        tx_start: out bit;
-        tx_done: out bit
+        tick: out std_logic;
+        tx: out std_logic;
+        tx_start: out std_logic;
+        tx_done: out std_logic
     );
 end;
 
@@ -20,7 +20,10 @@ architecture default of serial_tx_ztex is
     signal ztex_clk: std_logic;
     signal reset: std_logic;
 
+    signal tick_s: bit;
+    signal tx_s: bit;
     signal tx_start_s: bit;
+    signal tx_done_s: bit;
 
     signal din: bit_vector(7 downto 0);
     signal data: natural;
@@ -42,7 +45,10 @@ begin
 --    reset <= reset_in;
 --    reset <= '0';
 
-    tx_start <= tx_start_s;
+    with tick_s select tick <= '1' when '1', '0' when others;
+    with tx_s select tx <= '1' when '1', '0' when others;
+    with tx_start_s select tx_start <= '1' when '1', '0' when others;
+    with tx_done_s select tx_done <= '1' when '1', '0' when others;
 
     ztex_clk <= clk;
 
@@ -64,17 +70,17 @@ begin
             reset => reset,
             clk => ztex_clk,
             din => din,
-            tick => tick,
-            tx => tx,
+            tick => tick_s,
+            tx => tx_s,
             tx_start => tx_start_s,
-            tx_done => tx_done
+            tx_done => tx_done_s
         );
 
     data_next <= data + 1;
     din <= work.utils.to_bit_vector(data_next, 8);
     process(tx_start_s)
     begin
-        if clk'event and clk='1' then
+        if tx_start_s'event and tx_start_s='1' then
 --        if rising_edge(tx_start_s) then
             data <= 84;
 --            din <= "01010100"; -- 84, 0x54 b01010100

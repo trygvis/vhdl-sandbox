@@ -24,7 +24,8 @@ architecture default of uart_tx is
     signal s_reg, s_next: unsigned(3 downto 0);
     signal n_reg, n_next: unsigned(2 downto 0);
     signal b_reg, b_next: bit_vector(7 downto 0);
-    signal tx_reg, tx_next: bit;
+    signal tx_reg: bit := '1';
+    signal tx_next: bit;
 begin
     -- FSMD state & data registers
     process(clk, reset)
@@ -56,7 +57,8 @@ begin
     end process;
 
     -- next-state logic & data path functional units/routing
-    process(state_reg, s_reg, n_reg, b_reg, tick, tx_start, din)
+    -- n_next is in the list for the assert
+    process(state_reg, s_reg, n_reg, b_reg, tick, tx_start, din, n_next)
     begin
         state_next <= state_reg;
         s_next <= s_reg;

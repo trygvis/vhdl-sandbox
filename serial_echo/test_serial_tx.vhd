@@ -24,7 +24,7 @@ begin
         port map (
             clk => clk,
             reset => reset,
-            din => "10101010",
+            din => "11110000",
             tx => tx,
             tick => tick,
             tx_start => tx_start,

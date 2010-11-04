@@ -24,13 +24,25 @@ architecture default of serial_tx is
     signal tick_s: bit;
     signal tx_start_s: bit;
     signal tx_done_s: bit;
+
+    attribute buffer_type: string;
+    attribute clock_signal: string;
+
+    attribute buffer_type of tick_s: signal is "BUFG";
+--    attribute clock_signal of tick_s: signal is "yes";
+
+    attribute buffer_type of tx_start_s: signal is "bufg";
+--    attribute clock_signal of tx_start_s: signal is "yes";
+
+--    attribute clock_signal of clk: signal is "yes";
+--    attribute buffer_type of clk: signal is "bufg";
 begin
     tick <= tick_s;
     tx_done <= tx_done_s;
     tx_start <= tx_start_s;
 
     assert false
-    report "Serial configuration: baud divisor=" & to_string(BAUD_DIVISOR);
+    report "Serial configuration: baud divisor=" & to_string(BAUD_DIVISOR) severity info;
 
     baud_gen_unit: entity work.mod_m_counter(behavioral)
         generic map(

@@ -18,7 +18,7 @@ architecture behavioral of mod_m_counter is
     signal r_reg: unsigned(BITS - 1 downto 0) := (others => '0');
     signal r_next: unsigned(BITS - 1 downto 0);
 begin
-    process(clk, reset)
+    process(clk, reset, r_next)
     begin
         if reset = '1' then
             r_reg <= (others => '0');
