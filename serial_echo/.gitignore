@@ -2,3 +2,5 @@ test_serial_tx
 test_serial_tx_ztex
 test_tx
 *.vcd
+*.spl
+*.sym
