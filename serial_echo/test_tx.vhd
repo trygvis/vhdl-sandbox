@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.utils.all;
+use work.all;
 
 entity test_tx is
 end test_tx;
@@ -23,10 +24,10 @@ begin
     uut: entity work.uart_tx(default) port map (
         clk => clk,
         reset => reset,
-        tx_start => tx_start,
-        tick => tick,
         din => din,
-        tx_done_tick => tx_done_tick,
+        tick => tick,
+        tx_start => tx_start,
+        tx_done => tx_done_tick,
         tx => tx
     );
 

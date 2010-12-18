@@ -14,7 +14,7 @@ NET clk LOC = "K14" | IOSTANDARD = LVCMOS33;
 
 NET clk_out         LOC = "C7" | IOSTANDARD = LVCMOS33; # 92
 NET reset_out       LOC = "A7" | IOSTANDARD = LVCMOS33; # 93
-#NET                 LOC = "F7" | IOSTANDARD = LVCMOS33; # 95
+NET reset_inv       LOC = "F7" | IOSTANDARD = LVCMOS33; # 95
 #NET                 LOC = "E6" | IOSTANDARD = LVCMOS33; # 96
 NET tick            LOC = "D6" | IOSTANDARD = LVCMOS33; # 97
 NET tx              LOC = "C6" | IOSTANDARD = LVCMOS33; # 98
@@ -30,7 +30,7 @@ NET tx_done         LOC = "A6" | IOSTANDARD = LVCMOS33; # 100
 #NET "pb<6>"  LOC = "F16" | IOSTANDARD = LVCMOS33 | DRIVE = 12;
 #NET "pb<7>"  LOC = "F15" | IOSTANDARD = LVCMOS33 | DRIVE = 12;
 
-NET "pc<0>"  LOC = "G12" | IOSTANDARD = LVCMOS33;
+#NET "pc<0>"  LOC = "G12" | IOSTANDARD = LVCMOS33;
 #NET "pc<1>"  LOC = "G11" | IOSTANDARD = LVCMOS33;
 #NET "pc<2>"  LOC = "H15" | IOSTANDARD = LVCMOS33;
 #NET "pc<3>"  LOC = "M14" | IOSTANDARD = LVCMOS33;

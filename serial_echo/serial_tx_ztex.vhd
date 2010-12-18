@@ -76,8 +76,8 @@ begin
                 end if;
             when start =>
                 if tick = '1' then
-                    state_next <= data;
                     assert false report "state_next=data" severity note;
+                    state_next <= data;
                     s_next <= (others => '0');
                     n_next <= (others => '0');
                 end if;
@@ -170,8 +170,8 @@ entity serial_tx is
     );
 end;
 
-library unisim;
-use unisim.vcomponents.bufg;
+--library unisim;
+--use unisim.vcomponents.bufg;
 
 architecture default of serial_tx is
     signal tick_s, tick_buffered: std_logic;
@@ -279,8 +279,8 @@ use work.utils.all;
 entity serial_tx_ztex is
     port(
         clk: in std_logic;
---        reset_in: in std_logic;
-        pc: in std_logic_vector(0 downto 0);
+        reset_inv: in std_logic;
+--        pc: in std_logic_vector(0 downto 0);
         clk_out: out std_logic;
         reset_out: out std_logic;
         tick: out std_logic;
@@ -300,8 +300,10 @@ architecture default of serial_tx_ztex is
     signal tx_done_s:std_logic;
 
     signal din: std_logic_vector(7 downto 0);
-    signal data: natural range 0 to 255;
-    signal data_next: natural range 0 to 255;
+--    signal data, data_next: std_logic_vector(7 downto 0);
+    signal data, data_next: unsigned(7 downto 0) := to_unsigned(192, 8);
+--    signal data: natural range 0 to 255 := 192;
+--    signal data_next: natural range 0 to 255;
 
     -- Baud rate | Tick rate (16 * baud rate)
     --     1,200 |   19,200
@@ -314,8 +316,10 @@ architecture default of serial_tx_ztex is
     constant DIVISOR_BITS: positive := 9;
 begin
     clk_out <= ztex_clk;
-    reset_out <= pc(0);
-    reset <= pc(0);
+--    reset_out <= pc(0);
+--    reset <= pc(0);
+    reset_out <= not reset_inv;
+    reset <= not reset_inv;
 --    reset <= reset_in;
 --    reset <= '0';
 
@@ -343,23 +347,27 @@ begin
             tx_done => tx_done_s
         );
 
-    data_next <= data + 1;
---    data_next <= 65 when data = 90 else data + 1;
---    din <= std_logic_vector(to_unsigned(65, 8)) when data = 90 or reset = '1' else std_logic_vector(to_unsigned(data, 8));
-    process(tx_start_s)
+--    data_next <= data + 1;
+
+    data_next <= to_unsigned(192, 8) when data = to_unsigned(207, 8) else data + 1; -- C0 to CF
+    din <= std_logic_vector(data);
+
+    -- Is it this one that fucks up? how is a "natural" converted to an "unsigned"
+    -- and an "unsigned" to "std_logic_vector"
+--    din <= std_logic_vector(to_unsigned(data, 8));
+
+--    data_next <= "11000000" when data = "11001111" else data + 1; -- 0xC0 to 0xCF
+--    din <= data;
+
+    process(reset, tx_start_s)
     begin
-        if rising_edge(tx_start_s) then
---            data <= 84;
+        if reset = '1' then
+            data <= to_unsigned(192, 8);
+--        elsif rising_edge(tx_start_s) then
+        elsif tx_start_s'event and tx_start_s = '1' then
+--            data <= 0;
 --            data <= "01010100"; -- 84, 0x54 b01010100
             data <= data_next;
-        end if;
-    end process;
-
-    -- FSMD state & data registers
-    process(reset)
-    begin
-        if reset='1' then
-            data <= 0;
         end if;
     end process;
 end;
