@@ -7,6 +7,7 @@ package utils is
     function to_string(b: bit) return string;
     function to_string(b: std_logic) return string;
     function to_string(vec: std_logic_vector) return string;
+    function to_string(vec: std_ulogic_vector) return string;
     function to_string(vec: bit_vector) return string;
 --    function to_string(x: unsigned) return string;
     function to_string(int: integer) return string;
@@ -43,6 +44,21 @@ package body utils is
     end;
 
     function to_string(vec: std_logic_vector) return string is
+        variable result: string(1 to vec'length);
+    begin
+        for i in vec'range loop
+            case vec(i) is
+                when '0' => result(i+1) := '0';
+                when '1' => result(i+1) := '1';
+                when others =>
+                    assert false report "Failure" severity failure;
+                    return "F";
+            end case;
+        end loop;
+        return result;
+    end;
+
+    function to_string(vec: std_ulogic_vector) return string is
         variable result: string(1 to vec'length);
     begin
         for i in vec'range loop

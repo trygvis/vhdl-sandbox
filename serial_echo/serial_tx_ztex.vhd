@@ -10,11 +10,11 @@ entity uart_tx is
     );
     port(
         clk, reset: in std_logic;
-        tick: in bit;
-        din: in bit_vector(7 downto 0);
-        tx_start: in bit;
-        tx_done: out bit;
-        tx: out bit
+        tick: in std_logic;
+        din: in std_logic_vector(7 downto 0);
+        tx_start: in std_logic;
+        tx_done: out std_logic;
+        tx: out std_logic
     );
 end uart_tx;
 
@@ -23,9 +23,9 @@ architecture default of uart_tx is
     signal state_reg, state_next: state_type;
     signal s_reg, s_next: unsigned(3 downto 0);
     signal n_reg, n_next: unsigned(2 downto 0);
-    signal b_reg, b_next: bit_vector(7 downto 0);
-    signal tx_reg: bit := '1';
-    signal tx_next: bit;
+    signal b_reg, b_next: std_logic_vector(7 downto 0);
+    signal tx_reg:std_logic := '1';
+    signal tx_next: std_logic;
 begin
     -- FSMD state & data registers
     process(clk, reset)
@@ -125,7 +125,7 @@ entity mod_m_counter is
     );
     port(
         clk, reset: in std_logic;
-        max_tick: out bit
+        max_tick: out std_logic
 --        q: out std_logic_vector(BITS - 1 downto 0)
     );
 end mod_m_counter;
@@ -162,37 +162,39 @@ entity serial_tx is
     );
     port(
         clk, reset: in std_logic;
-        din: in bit_vector(7 downto 0);
-        tick: out bit;
-        tx: out bit;
-        tx_start: out bit;
-        tx_done: out bit
+        din: in std_logic_vector(7 downto 0);
+        tick: out std_logic;
+        tx: out std_logic;
+        tx_start: out std_logic;
+        tx_done: out std_logic
     );
 end;
 
+library unisim;
+use unisim.vcomponents.bufg;
+
 architecture default of serial_tx is
-    signal tick_s: bit;
-    signal tx_start_s: bit;
-    signal tx_done_s: bit;
+    signal tick_s, tick_buffered: std_logic;
+    signal tx_start_s, tx_start_buffered: std_logic;
+    signal tx_done_s: std_logic;
 
     attribute buffer_type: string;
     attribute clock_signal: string;
 
-    attribute buffer_type of tick_s: signal is "BUFG";
 --    attribute clock_signal of tick_s: signal is "yes";
-
-    attribute buffer_type of tx_start_s: signal is "BUFG";
---    attribute clock_signal of tx_start_s: signal is "yes";
-
---    attribute clock_signal of clk: signal is "yes";
---    attribute buffer_type of clk: signal is "bufg";
 begin
-    tick <= tick_s;
+    tick <= tick_buffered;
     tx_done <= tx_done_s;
     tx_start <= tx_start_s;
 
     assert false
     report "Serial configuration: baud divisor=" & to_string(BAUD_DIVISOR) severity note;
+
+    tick_buffered <= tick_s;
+    tx_start_buffered <= tx_start_s;
+
+--    tick_buf: component bufg port map(i => tick_s, o => tick_buffered);
+--    tx_start_buf: component bufg port map(i => tx_start_s, o => tx_start_buffered);
 
     baud_gen_unit: entity work.mod_m_counter(behavioral)
         generic map(
@@ -208,7 +210,7 @@ begin
             M => 16 * 16, -- start a new tx after 16 bits (* 16 ticks)
             BITS => 10)
         port map(
-            clk => to_std_logic(tick_s),
+            clk => tick_buffered,
             reset => reset,
             max_tick => tx_start_s);
 
@@ -219,11 +221,54 @@ begin
         port map(
           clk => clk,
             reset => reset,
-            tick => tick_s,
+            tick => tick_buffered,
             din => din,
             tx => tx,
-            tx_start => tx_start_s,
+            tx_start => tx_start_buffered,
             tx_done => tx_done_s);
+end;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity delayer is
+    generic(
+        COUNT: positive;
+        BITS: positive
+    );
+    port(
+        clk: in std_logic;
+        input: in std_logic;
+        output: out std_logic
+    );
+end;
+
+architecture default of delayer is
+    type delayer_state is (active, idle);
+    signal state: delayer_state := idle;
+    signal state_next: delayer_state := idle;
+    signal counter, counter_next: unsigned(BITS - 1 downto 0);
+begin
+    process(clk, input)
+    begin
+        if clk'event and clk='1' then
+            state <= state_next;
+            if input = '1' then
+                state_next <= active;
+                counter <= (others => '0');
+            else
+                counter <= counter_next;
+                if counter=(COUNT - 1) then
+                    state_next <= idle;
+                end if;
+            end if;
+        end if;
+    end process;
+
+    counter_next <= counter + 1;
+--    state_next <= idle when counter=(COUNT - 1) else active;
+    output <= '1' when state = active else '0';
 end;
 
 library ieee;
@@ -249,14 +294,14 @@ architecture default of serial_tx_ztex is
     signal ztex_clk: std_logic;
     signal reset: std_logic;
 
-    signal tick_s: bit;
-    signal tx_s: bit;
-    signal tx_start_s: bit;
-    signal tx_done_s: bit;
+    signal tick_s: std_logic;
+    signal tx_s: std_logic;
+    signal tx_start_s: std_logic;
+    signal tx_done_s:std_logic;
 
-    signal din: bit_vector(7 downto 0);
-    signal data: natural;
-    signal data_next: natural;
+    signal din: std_logic_vector(7 downto 0);
+    signal data: natural range 0 to 255;
+    signal data_next: natural range 0 to 255;
 
     -- Baud rate | Tick rate (16 * baud rate)
     --     1,200 |   19,200
@@ -274,21 +319,14 @@ begin
 --    reset <= reset_in;
 --    reset <= '0';
 
-    with tick_s select tick <= '1' when '1', '0' when others;
     with tx_s select tx <= '1' when '1', '0' when others;
-    with tx_start_s select tx_start <= '1' when '1', '0' when others;
-    with tx_done_s select tx_done <= '1' when '1', '0' when others;
+
+    -- Make sure that all metadata output signals are clk/48 long (48MHz/48=1MHz=1us)
+    tick_delayer: entity work.delayer generic map(48, 6) port map(clk, tick_s, tick);
+    tx_start_delayer: entity work.delayer generic map(48, 6) port map(clk, tx_start_s, tx_start);
+    tx_done_delayer: entity work.delayer generic map(48, 6) port map(clk, tx_done_s, tx_done);
 
     ztex_clk <= clk;
-
---    clk_gen_unit: entity work.mod_m_counter(behavioral)
---        generic map(
---            M => 48,
---            BITS => 10)
---        port map(
---            reset => reset,
---            clk => clk,
---            max_tick => ztex_clk);
 
     serial_tx: entity work.serial_tx(default)
         generic map(
@@ -306,14 +344,22 @@ begin
         );
 
     data_next <= data + 1;
-    din <= work.utils.to_bit_vector(data_next, 8);
+--    data_next <= 65 when data = 90 else data + 1;
+--    din <= std_logic_vector(to_unsigned(65, 8)) when data = 90 or reset = '1' else std_logic_vector(to_unsigned(data, 8));
     process(tx_start_s)
     begin
-        if tx_start_s'event and tx_start_s='1' then
---        if rising_edge(tx_start_s) then
-            data <= 84;
---            din <= "01010100"; -- 84, 0x54 b01010100
---            din <= din_next;
+        if rising_edge(tx_start_s) then
+--            data <= 84;
+--            data <= "01010100"; -- 84, 0x54 b01010100
+            data <= data_next;
+        end if;
+    end process;
+
+    -- FSMD state & data registers
+    process(reset)
+    begin
+        if reset='1' then
+            data <= 0;
         end if;
     end process;
 end;
