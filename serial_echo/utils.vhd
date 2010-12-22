@@ -37,9 +37,9 @@ package body utils is
             when '0' => return "0";
             when '1' => return "1";
             when 'U' => return "U";
-            when others =>
-                assert false report "Failure" severity failure;
-                return "F";
+--            when others =>
+--                assert false report "Failure" severity failure;
+--                return "F";
         end case;
     end;
 
@@ -65,9 +65,9 @@ package body utils is
             case vec(i) is
                 when '0' => result(i+1) := '0';
                 when '1' => result(i+1) := '1';
-                when others =>
-                    assert false report "Failure" severity failure;
-                    return "F";
+--                when others =>
+--                    assert false report "Failure" severity failure;
+--                    return "F";
             end case;
         end loop;
         return result;
@@ -80,9 +80,9 @@ package body utils is
             case vec(i) is
                 when '0' => result(i+1) := '0';
                 when '1' => result(i+1) := '1';
-                when others =>
-                    assert false report "Failure" severity failure;
-                    return "F";
+--                when others =>
+--                    assert false report "Failure" severity failure;
+--                    return "F";
             end case;
         end loop;
         return result;
@@ -101,7 +101,7 @@ package body utils is
     begin
         case b is
             when '1' => return '1';
-            when others => return '0';
+            when '0' => return '0';
         end case;
     end;
 
